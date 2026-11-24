@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+// PHASE 1:
+
 void main() {
   runApp(const MyApp());
 }
