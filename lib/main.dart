@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
 
-// PHASE 1:
-
 void main() {
   runApp(const MyApp());
 }
@@ -24,8 +22,59 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+// STATIC: Home screen
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  // LOGIC: Store study goals
+  List<Map<String, dynamic>> goals = [
+    {
+      'subject': 'Mathematics',
+      'hours': 3,
+      'done': false,
+    },
+    {
+      'subject': 'Programming',
+      'hours': 2,
+      'done': false,
+    },
+    {
+      'subject': 'Networking',
+      'hours': 4,
+      'done': false,
+    },
+  ];
+
+  // LOGIC: Toggle goal completion
+  void toggleGoal(int index) {
+    setState(() {
+      goals[index]['done'] = !goals[index]['done'];
+    });
+  }
+
+  // LOGIC: Delete a goal
+  void deleteGoal(int index) {
+    setState(() {
+      goals.removeAt(index);
+    });
+  }
+
+  // LOGIC: Add a sample goal
+  void addGoal() {
+    setState(() {
+      goals.add({
+        'subject': 'Database Systems',
+        'hours': 2,
+        'done': false,
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +85,13 @@ class HomeScreen extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
 
-      // STATIC: Page content
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            // STATIC: Heading
             const Text(
               'My Study Goals',
               style: TextStyle(
@@ -52,36 +102,62 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 15),
 
-            // STATIC: Study goal cards
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.book, color: Colors.blue),
-                title: const Text('Mathematics'),
-                subtitle: const Text('3 study hours'),
-              ),
-            ),
+            // CONNECTION: Connect data to the screen
+            Expanded(
+              child: ListView.builder(
+                itemCount: goals.length,
+                itemBuilder: (context, index) {
 
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.computer, color: Colors.blue),
-                title: const Text('Programming'),
-                subtitle: const Text('2 study hours'),
-              ),
-            ),
+                  final goal = goals[index];
 
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.wifi, color: Colors.blue),
-                title: const Text('Networking'),
-                subtitle: const Text('4 study hours'),
+                  return Card(
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: goal['done'],
+                        onChanged: (value) {
+                          // CONNECTION: Connect checkbox to logic
+                          toggleGoal(index);
+                        },
+                      ),
+
+                      title: Text(
+                        goal['subject'],
+                        style: TextStyle(
+                          decoration: goal['done']
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      ),
+
+                      subtitle: Text(
+                        '${goal['hours']} study hours',
+                      ),
+
+                      trailing: IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          deleteGoal(index);
+                        },
+                      ),
+
+                      onTap: () {
+                        toggleGoal(index);
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ],
         ),
       ),
 
+      // STATIC: Floating action button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: addGoal,
         child: const Icon(Icons.add),
       ),
     );
